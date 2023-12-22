@@ -2,6 +2,8 @@ package com.lolduo.riotapiserver.controller;
 
 import com.lolduo.riotapiserver.Service;
 import com.lolduo.riotapiserver.record.LeagueRecord;
+
+import ch.qos.logback.classic.net.SyslogAppender;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,7 +19,6 @@ public class LeagueController {
 
     @GetMapping("/challenger")
     public LeagueRecord challenger() {
-        //leagueService.test();
         return leagueService.getApi(LeagueRecord.class, "/lol/league/v4/challengerleagues/by-queue/RANKED_SOLO_5x5");
     }
 
@@ -33,12 +34,13 @@ public class LeagueController {
 
     @GetMapping("/{tier}/{division}/{page}")
     public LeagueRecord tierDivisionPage(@PathVariable String tier, @PathVariable String division, @PathVariable int page) {
-        StringBuilder sb = new StringBuilder("lol/league/v4/entries/RANKED_SOLO_5x5/")
+        StringBuilder sb = new StringBuilder("/lol/league/v4/entries/RANKED_SOLO_5x5/")
                 .append(tier)
                 .append("/")
                 .append(division)
                 .append("?page=")
                 .append(page);
+
         return leagueService.getApi(LeagueRecord.class,sb.toString() );
     }
 }
