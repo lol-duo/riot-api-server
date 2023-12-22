@@ -1,0 +1,57 @@
+name: CI to AWS (Prod)
+on:
+  push:
+    branches: ["master"]
+
+env:
+  S3_BUCKET_NAME: deploy.lol-duo
+  SERVER_NAME : riot-apiserver-prod
+  AWS_REGION : ap-northeast-2
+  PROPERTEIS_FILE : src/main/resources/application-prod.properties
+  TAG: riot-api-${{ github.sha }}
+jobs:
+  build:
+    environment: AWS
+    runs-on: ubuntu-latest
+
+    steps:
+      # 코드 저장소에 올려둔 코드를 CI 서버로 내려받는 과정
+      - uses: actions/checkout@v3
+      # 자바 17 설치 과정
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      # properties에 github secrets에 저장해둔 api key를 넣어주는 과정
+      - name: Get Api Key From Github Secrects
+        run: |
+          touch ${{ env.PROPERTEIS_FILE }}
+          echo "riot.api.key=${{ secrets.RIOT_API_REQUEST_KEY }}" >> ${{ env.PROPERTEIS_FILE }}
+          cat ${{ env.PROPERTEIS_FILE }}
+      # gradle을 사용하여 빌드하는 과정
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Build with Gradle (Prod Profile)
+        run: ./gradlew clean build -Pspring.profiles.active=prod
+
+      - name: Make Directory
+        run: mkdir deploy
+
+      - name: Copy Jar
+        run: cp ./build/libs/*.jar ./deploy
+
+      - name: Make zip file
+        run: zip -r ./${{ env.TAG }}.zip ./deploy
+
+
+      - name: Set up AWS CLI
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: upload to s3
+        run: aws s3 cp --region ${{ env.AWS_REGION }} ./${{ env.TAG }}.zip s3://${{ env.S3_BUCKET_NAME }}/${{ env.SERVER_NAME }}/       

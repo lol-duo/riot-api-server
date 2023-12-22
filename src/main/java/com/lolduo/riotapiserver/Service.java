@@ -1,6 +1,7 @@
 package com.lolduo.riotapiserver;
 
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -15,6 +16,9 @@ public class Service {
     private static int apiCallCount = 0;
     private static final long[] apiCallList = new long[5];
     private static int nowApiCall = 0;
+
+    @Value("${riot.api.key}")
+    String apiKey ;
 
    public int getApiCallCount() {
        return apiCallCount;
@@ -43,7 +47,7 @@ public class Service {
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
 
-        headers.set("X-Riot-Token", "");
+        headers.set("X-Riot-Token", apiKey);
         HttpEntity<?> entity = new HttpEntity<>(headers);
         ResponseEntity<T> data = null;
         try {
