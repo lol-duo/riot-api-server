@@ -16,8 +16,13 @@ public class Controller {
         return "Hello World!";
     }
 
-   @GetMapping("/apiCallCount")
-   public int apiCallCount() {
+    @GetMapping("/apiCallCount")
+    public int apiCallCount() {
        return service.getApiCallCount();
    }
+
+    @GetMapping("/apiCallCountReset")
+    public void apiCallCountReset() {
+        service.resetApiCallCount();
+    }
 }
