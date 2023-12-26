@@ -45,7 +45,6 @@ jobs:
       - name: Make zip file
         run: zip -r ./${{ env.TAG }}.zip ./deploy
 
-
       - name: Set up AWS CLI
         uses: aws-actions/configure-aws-credentials@v1
         with:
