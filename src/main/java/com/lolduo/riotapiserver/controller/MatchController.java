@@ -19,7 +19,9 @@ public class MatchController {
 
     @GetMapping("/by-puuid/{puuid}")
     public String[] byPuuid(@PathVariable String puuid) {
-        URI uri = URI.create("https://asia.api.riotgames.com/lol/match/v5/matches/by-puuid/" + puuid + "/ids?start=0&count=100");
+        long now = System.currentTimeMillis() / 1000;
+        long TWO_DAYS = 60 * 60 * 24 * 2;
+        URI uri = URI.create("https://asia.api.riotgames.com/lol/match/v5/matches/by-puuid/" + puuid + "/ids?start=0&count=100startTime="+now+"&endTime=" + (now - TWO_DAYS));
         return service.getApi(String[].class, uri);
     }
 
