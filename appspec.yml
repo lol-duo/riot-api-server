@@ -1,0 +1,15 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /home/ec2-user/riot-api-server
+permissions:
+  - object: /home/ec2-user/riot-api-server
+    pattern: "**"
+    owner: root
+    mode: 777
+hooks:
+  ApplicationStart:
+    - location: deploy.sh
+      timeout: 300
+      runas: root

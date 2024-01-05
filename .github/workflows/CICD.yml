@@ -1,4 +1,4 @@
-name: CI to AWS (Prod)
+name: CI/CD to AWS (Prod)
 on:
   push:
     branches: ["master"]
@@ -42,6 +42,12 @@ jobs:
       - name: Copy Jar
         run: cp ./build/libs/*.jar ./deploy
 
+      - name: Copy appspec.yml
+        run: cp appspec.yml ./deploy
+
+      - name: Copy deploy.sh
+        run: cp deploy.sh ./deploy
+
       - name: Make zip file
         run: zip -r ./${{ env.TAG }}.zip ./deploy
 
@@ -53,4 +59,8 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: upload to s3
-        run: aws s3 cp --region ${{ env.AWS_REGION }} ./${{ env.TAG }}.zip s3://${{ env.S3_BUCKET_NAME }}/${{ env.SERVER_NAME }}/       
+        run: aws s3 cp --region ${{ env.AWS_REGION }} ./${{ env.TAG }}.zip s3://${{ env.S3_BUCKET_NAME }}/${{ env.SERVER_NAME }}/
+      
+      - name: Deploy
+        run: |
+          aws deploy create-deployment --application-name lol-duo-job --deployment-group-name lol-duo-job-group --file-exists-behavior OVERWRITE --s3-location bucket=${{ env.S3_BUCKET_NAME }},bundleType=zip,key=${{ env.SERVER_NAME }}/${{ env.TAG }}.zip --region ap-northeast-2
