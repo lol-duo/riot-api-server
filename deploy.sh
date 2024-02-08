@@ -17,4 +17,4 @@ echo "> JAR NAME: $JAR_NAME"
 echo "> $JAR_NAME 에 실행권한 추가"
 chmod +x $JAR_NAME
 echo "> $JAR_NAME 실행"
-nohup /opt/jdk-17/bin/java -jar -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=9902 -Dcom.sun.management.jmxremote.rmi.port=9902 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -Djava.rmi.server.hostname=43.203.53.58 $JAR_NAME > $REPOSITORY/nohup.out  2>&1 &
+nohup /opt/jdk-17/bin/java -jar -Dspring.profiles.active=prod -Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=9902 -Dcom.sun.management.jmxremote.rmi.port=9902 -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false -Djava.rmi.server.hostname=43.203.53.58 $JAR_NAME > $REPOSITORY/nohup.out  2>&1 &
